@@ -24,14 +24,15 @@ namespace captive_portal_demo
         public static string INSTALL_HOSTAPD = "apt-get install -y hostapd";
 
         public static string SAVE_ORIG_DNSMASQ_CONFIG = "mv -n /etc/dnsmasq.conf /etc/dnsmasq.conf.orig";
-        public static string MOVE_NEW_DNSMASQ_CONFIG_TEMAPLATE = "cp {0} /etc/";
+        public static string MOVE_NEW_DNSMASQ_CONFIG_TEMPLATE = "cp {0} /etc/";
 
         public static string SAVE_ORIG_INTERFACES_CONFIG = "mv -n /etc/network/interfaces /etc/network/interfaces.orig";
-        public static string MOVE_NEW_INTERFACES_CONFIG_TEMAPLATE = "cp {0} /etc/network/";
-        public static string MOVE_NEW_HOSTAPD_CONFIG_TEMAPLATE = "cp {0} /etc/hostapd/";
+        public static string MOVE_NEW_INTERFACES_CONFIG_TEMPLATE = "cp {0} /etc/network/";
+        public static string MOVE_NEW_HOSTAPD_CONFIG_TEMPLATE = "cp {0} /etc/hostapd/";
 
         public static string IPTABLES_FLUSH = "iptables -F";
         public static string IPTABLES_DELETE_CHAINS = "iptables -X";
+        public static string IPTABLES_RESTORE_TEMPLATE = "iptables-restore {0}";
     }
 
     public static class LinuxManager
@@ -64,7 +65,7 @@ namespace captive_portal_demo
 
             var dnsmasqConfPath = currentDirectory + "/ConfigFiles/dnsmasq.conf";
             var dnsmasqConfCopyCommand =
-                String.Format(LinuxCommands.MOVE_NEW_DNSMASQ_CONFIG_TEMAPLATE, dnsmasqConfPath);
+                String.Format(LinuxCommands.MOVE_NEW_DNSMASQ_CONFIG_TEMPLATE, dnsmasqConfPath);
             dnsmasqConfCopyCommand.Shell();
         }
 
@@ -76,7 +77,7 @@ namespace captive_portal_demo
 
             var interfacesConfPath = currentDirectory + "/ConfigFiles/interfaces";
             var interfacesConfCopyCommand =
-                String.Format(LinuxCommands.MOVE_NEW_INTERFACES_CONFIG_TEMAPLATE, interfacesConfPath);
+                String.Format(LinuxCommands.MOVE_NEW_INTERFACES_CONFIG_TEMPLATE, interfacesConfPath);
             interfacesConfCopyCommand.Shell();
         }
 
@@ -97,7 +98,7 @@ namespace captive_portal_demo
 
             var hostapdConfPath = currentDirectory + "/ConfigFiles/hostapd.conf";
             var hostapdConfCopyCommand =
-                String.Format(LinuxCommands.MOVE_NEW_HOSTAPD_CONFIG_TEMAPLATE, hostapdConfPath);
+                String.Format(LinuxCommands.MOVE_NEW_HOSTAPD_CONFIG_TEMPLATE, hostapdConfPath);
             hostapdConfCopyCommand.Shell();
 
             var defaultsPath = "/etc/default/hostapd";
@@ -111,6 +112,11 @@ namespace captive_portal_demo
             LinuxCommands.IPTABLES_FLUSH.Shell();
             LinuxCommands.IPTABLES_DELETE_CHAINS.Shell();
 
+            var currentDirectory = Directory.GetCurrentDirectory();
+            var iptablesConfigPath = currentDirectory + "/ConfigFiles/iptables.dat";
+            var iptablesRestoreCommand =
+                String.Format(LinuxCommands.IPTABLES_RESTORE_TEMPLATE, iptablesConfigPath);
+            iptablesRestoreCommand.Shell();
         }
     }
 }
