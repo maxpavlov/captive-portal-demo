@@ -18,10 +18,19 @@ namespace captive_portal_demo
         public static string PURGE_IPTABLES_PERSISTENT_CONFIGS =
             "echo PURGE | debconf-communicate iptables-persistent";
 
+        public static string DISABLE_RESOLVED = "systemctl disable systemd-resolved";
+        public static string ENABLE_RESOLVED = "systemctl enable systemd-resolved";
+        public static string STOP_RESOLVED = "systemctl stop systemd-resolved";
+        public static string START_RESOLVED = "systemctl start systemd-resolved";
+        public static string STOP_DNSMASQ = "systemctl stop dnsmasq";
+        public static string START_DNSMASQ = "systemctl start dnsmasq";
+
         public static string INSTALL_IPTABLES_PERSISTENT = "apt-get -y install iptables-persistent";
         public static string INSTALL_CONNTRACK = "apt-get install -y conntrack";
         public static string INSTALL_DNSMASQ = "apt-get install -y dnsmasq";
         public static string INSTALL_HOSTAPD = "apt-get install -y hostapd";
+
+
 
         public static string SAVE_ORIG_DNSMASQ_CONFIG = "mv -n /etc/dnsmasq.conf /etc/dnsmasq.conf.orig";
         public static string MOVE_NEW_DNSMASQ_CONFIG_TEMPLATE = "cp {0} /etc/";
@@ -50,7 +59,11 @@ namespace captive_portal_demo
             LinuxCommands.INSTALL_CONNTRACK.Shell();
 
             //Install dnsmasq
+            LinuxCommands.DISABLE_RESOLVED.Shell();
+            LinuxCommands.STOP_RESOLVED.Shell();
             LinuxCommands.INSTALL_DNSMASQ.Shell();
+            LinuxCommands.ENABLE_RESOLVED.Shell();
+            LinuxCommands.START_RESOLVED.Shell();
 
             //Install hostapd
             LinuxCommands.INSTALL_HOSTAPD.Shell();
@@ -59,6 +72,7 @@ namespace captive_portal_demo
 
         public static void SetupDNSMASQ()
         {
+            LinuxCommands.STOP_DNSMASQ.Shell();
             LinuxCommands.SAVE_ORIG_INTERFACES_CONFIG.Shell();
 
             var currentDirectory = Directory.GetCurrentDirectory();
@@ -67,6 +81,8 @@ namespace captive_portal_demo
             var dnsmasqConfCopyCommand =
                 String.Format(LinuxCommands.MOVE_NEW_DNSMASQ_CONFIG_TEMPLATE, dnsmasqConfPath);
             dnsmasqConfCopyCommand.Shell();
+
+            LinuxCommands.START_DNSMASQ.Shell();
         }
 
         public static void SetupOSInterfaces()
@@ -102,9 +118,14 @@ namespace captive_portal_demo
             hostapdConfCopyCommand.Shell();
 
             var defaultsPath = "/etc/default/hostapd";
+            var replaceWhat = "#DAEMON_CONF=\"\"";
+            var replaceWithWhat = "DAEMON_CONF=\"/etc/hostapd/hostapd.conf\"";
             string hostapdDefaults = File.ReadAllText(defaultsPath);
-            hostapdDefaults = hostapdDefaults.Replace("#DAEMON_CONF=\"\"", "DAEMON_CONF=\"/etc/ hostapd/hostapd.conf\"");
-            File.WriteAllText(defaultsPath, hostapdDefaults);
+            if (!hostapdDefaults.Contains(replaceWithWhat))
+            {
+                hostapdDefaults = hostapdDefaults.Replace(replaceWhat, replaceWithWhat);
+                File.WriteAllText(defaultsPath, hostapdDefaults);
+            }
         }
 
         public static void SetupIPTables()

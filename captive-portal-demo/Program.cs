@@ -26,6 +26,8 @@ namespace captive_portal_demo
             Console.WriteLine("1.4 Setting up iptables rules.");
             LinuxManager.SetupIPTables();
 
+            Console.WriteLine("2. Need to start captive portal web UI.");
+            
         }
 
     }

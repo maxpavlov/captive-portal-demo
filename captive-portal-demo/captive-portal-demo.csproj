@@ -9,10 +9,22 @@
 		<RuntimeIdentifiers>win10-x64;linux-x64</RuntimeIdentifiers>
 	</PropertyGroup>
 	<ItemGroup>
+	  <None Remove="ConfigFiles\dnsmasq.conf" />
+	  <None Remove="ConfigFiles\hostapd.conf" />
 	  <None Remove="ConfigFiles\interfaces" />
+	  <None Remove="ConfigFiles\iptables.dat" />
 	</ItemGroup>
 	<ItemGroup>
+	  <Content Include="ConfigFiles\dnsmasq.conf">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="ConfigFiles\hostapd.conf">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
 	  <Content Include="ConfigFiles\interfaces">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="ConfigFiles\iptables.dat">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </Content>
 	</ItemGroup>
